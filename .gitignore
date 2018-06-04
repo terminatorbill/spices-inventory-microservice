@@ -1,0 +1,12 @@
+*.iml
+*.ipr
+*.iws
+.idea/**
+*.orig
+/tmp
+build/
+target/
+out/
+/*/dependency-reduced-pom.xml
+web/dependency-reduced-pom.xml
+!/.gitignore
