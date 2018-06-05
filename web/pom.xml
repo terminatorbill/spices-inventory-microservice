@@ -46,8 +46,10 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.version}</version>
                 <configuration>
-                    <mainClass>com.spices.inventory.MainApp</mainClass>
+                    <skip>false</skip>
+                    <mainClass>com.spices.inventory.MainAppKt</mainClass>
                     <layout>JAR</layout>
                 </configuration>
                 <executions>
