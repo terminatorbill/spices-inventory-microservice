@@ -1,6 +1,6 @@
 package com.spices.inventory.api
 
-import com.spices.inventory.dto.Stock
+import com.spices.inventory.dto.StockDto
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -10,5 +10,5 @@ import javax.ws.rs.core.MediaType
 interface InventoryApi {
 
     @GET
-    fun retrieveStock(@QueryParam("productIds") productIds: List<String>): List<Stock>
+    fun retrieveStock(@QueryParam("productIds") productIds: List<String>): List<StockDto>
 }
