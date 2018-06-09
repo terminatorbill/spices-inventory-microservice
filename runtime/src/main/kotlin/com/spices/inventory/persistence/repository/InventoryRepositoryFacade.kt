@@ -1,7 +1,7 @@
-package com.spices.inventory.persistence
+package com.spices.inventory.persistence.repository
 
 import com.spices.inventory.domain.Stock
 
-interface InventoryDaoFacade {
+interface InventoryRepositoryFacade {
     fun retrieveStock(productIds: List<Long>): List<Stock>
 }

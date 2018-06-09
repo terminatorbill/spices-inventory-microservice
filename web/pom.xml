@@ -62,7 +62,6 @@
             </plugin>
             <plugin>
                 <artifactId>kotlin-maven-plugin</artifactId>
-                <version>${kotlin.version}</version>
                 <groupId>org.jetbrains.kotlin</groupId>
             </plugin>
         </plugins>

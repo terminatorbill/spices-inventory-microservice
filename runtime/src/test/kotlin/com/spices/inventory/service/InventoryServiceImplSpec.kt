@@ -1,7 +1,7 @@
 package com.spices.inventory.service
 
 import com.spices.inventory.domain.Stock
-import com.spices.inventory.persistence.InventoryDaoFacade
+import com.spices.inventory.persistence.repository.InventoryRepositoryFacade
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.jetbrains.spek.api.Spek
@@ -12,7 +12,7 @@ import org.mockito.Mockito
 
 object InventoryServiceImplSpec : Spek({
 
-    val inventoryDaoFacade = Mockito.mock(InventoryDaoFacade::class.java)
+    val inventoryDaoFacade = Mockito.mock(InventoryRepositoryFacade::class.java)
     val inventoryService = InventoryServiceImpl(inventoryDaoFacade)
 
     given("We want to retrieve the stock for each passed productId") {
