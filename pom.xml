@@ -138,6 +138,12 @@
                 <version>${h2.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-test</artifactId>
+                <version>${spring.boot.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -171,7 +177,7 @@
                 <module>api</module>
                 <module>runtime</module>
                 <module>web</module>
-                <!--<module>database-integration-tests</module>-->
+                <module>database-integration-tests</module>
             </modules>
         </profile>
         <!--<profile>
@@ -261,7 +267,7 @@
                     <configuration>
                         <skipTests>${skip.unit.tests}</skipTests>
                         <excludes>
-                            <exclude>**/*IntegrationTest.java</exclude>
+                            <exclude>**/*IntegrationSpec.*</exclude>
                             <exclude>**/functional/**</exclude>
                         </excludes>
                         <includes>
