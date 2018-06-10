@@ -16,6 +16,9 @@
         <spek.version>1.1.5</spek.version>
         <spring.boot.version>2.0.2.RELEASE</spring.boot.version>
         <h2.version>1.4.197</h2.version>
+        <postgres.version>42.2.2</postgres.version>
+        <junit.version>5.1.0</junit.version>
+        <junit.platform.version>1.1.0</junit.platform.version>
     </properties>
 
 
@@ -66,6 +69,11 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-jpa</artifactId>
                 <version>${spring.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgres.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jetbrains.spek</groupId>
@@ -133,6 +141,56 @@
         </dependencies>
     </dependencyManagement>
 
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <build.profile.id>dev</build.profile.id>
+                <skip.integration.tests>true</skip.integration.tests>
+                <skip.functional.tests>true</skip.functional.tests>
+                <skip.unit.tests>false</skip.unit.tests>
+            </properties>
+            <modules>
+                <module>api</module>
+                <module>runtime</module>
+                <module>web</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>integration-test</id>
+            <properties>
+                <build.profile.id>integration-test</build.profile.id>
+                <skip.integration.tests>false</skip.integration.tests>
+                <skip.unit.tests>true</skip.unit.tests>
+                <skip.functional.tests>true</skip.functional.tests>
+            </properties>
+            <modules>
+                <module>api</module>
+                <module>runtime</module>
+                <module>web</module>
+                <!--<module>database-integration-tests</module>-->
+            </modules>
+        </profile>
+        <!--<profile>
+            <id>functional-test</id>
+            <properties>
+                <build.profile.id>functional-test</build.profile.id>
+                <skip.integration.tests>true</skip.integration.tests>
+                <skip.unit.tests>true</skip.unit.tests>
+                <skip.functional.tests>false</skip.functional.tests>
+            </properties>
+            <modules>
+                <module>api</module>
+                <module>runtime</module>
+                <module>web</module>
+                <module>functional-tests</module>
+            </modules>
+        </profile>-->
+    </profiles>
+
     <build>
         <finalName>inventory-${project.version}</finalName>
         <pluginManagement>
@@ -191,10 +249,76 @@
                         </dependency>
                         <dependency>
                             <groupId>org.jetbrains.kotlin</groupId>
-                            <artifactId>kotlin-noarg</artifactId>
+                            <artifactId>kotlin-maven-noarg</artifactId>
                             <version>${kotlin.version}</version>
                         </dependency>
                     </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.19.1</version>
+                    <configuration>
+                        <skipTests>${skip.unit.tests}</skipTests>
+                        <excludes>
+                            <exclude>**/*IntegrationTest.java</exclude>
+                            <exclude>**/functional/**</exclude>
+                        </excludes>
+                        <includes>
+                            <include>**/*Spec.*</include>
+                        </includes>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.junit.jupiter</groupId>
+                            <artifactId>junit-jupiter-engine</artifactId>
+                            <version>${junit.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.junit.platform</groupId>
+                            <artifactId>junit-platform-surefire-provider</artifactId>
+                            <version>${junit.platform.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>${build.helper.maven.plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.19.1</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.junit.jupiter</groupId>
+                            <artifactId>junit-jupiter-engine</artifactId>
+                            <version>${junit.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.junit.platform</groupId>
+                            <artifactId>junit-platform-surefire-provider</artifactId>
+                            <version>${junit.platform.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>0.26.0.0</version>
+                    <executions>
+                        <execution>
+                            <configuration>
+                                <skip>true</skip>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.8</version>
                 </plugin>
             </plugins>
         </pluginManagement>
