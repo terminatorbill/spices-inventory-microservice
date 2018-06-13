@@ -6,7 +6,7 @@ import javax.persistence.*
 @Table(name = "product_stock")
 class StockEntity(
         @Id @Column(name = "stock_id") @GeneratedValue
-        val stockId: Long,
+        val stockId: Long?,
         @Column(name = "product_id", nullable = false, unique = true)
         val productId: Long,
         @Column(name = "current_stock", nullable = false)
