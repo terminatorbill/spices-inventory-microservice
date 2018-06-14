@@ -8,7 +8,9 @@ import org.springframework.data.repository.query.Param
 
 interface StockEntityRepository : JpaRepository<StockEntity, Long> {
 
-    @Query("SELECT new com.spices.inventory.persistence.projection.StockProjection(s.productId, s.currentStock) " +
-            "FROM StockEntity s WHERE s.productId IN :productIds")
-    fun retrieveStockForProducts(@Param("productIds") productIds: List<Long>) : List<StockProjection>
+    @Query(
+        "SELECT new com.spices.inventory.persistence.projection.StockProjection(s.productId, s.currentStock) " +
+            "FROM StockEntity s WHERE s.productId IN :productIds"
+    )
+    fun retrieveStockForProducts(@Param("productIds") productIds: List<Long>): List<StockProjection>
 }

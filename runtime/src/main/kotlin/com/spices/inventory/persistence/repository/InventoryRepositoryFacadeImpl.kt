@@ -11,7 +11,7 @@ class InventoryRepositoryFacadeImpl @Inject constructor(val stockEntityRepositor
 
     @Transactional
     override fun retrieveStock(productIds: List<Long>): List<Stock> {
-        val stock : List<StockProjection> = stockEntityRepository.retrieveStockForProducts(productIds)
+        val stock: List<StockProjection> = stockEntityRepository.retrieveStockForProducts(productIds)
 
         return stock.asSequence()
                 .map { s -> Stock(s.productId, s.currentStock) }

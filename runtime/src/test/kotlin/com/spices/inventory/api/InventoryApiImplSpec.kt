@@ -11,7 +11,7 @@ import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.mockito.Mockito
 
-object InventoryApiImplSpec: Spek({
+object InventoryApiImplSpec : Spek({
 
     val inventoryService: InventoryService = Mockito.mock(InventoryService::class.java)
     val inventoryApi: InventoryApi = InventoryApiImpl(inventoryService)
@@ -39,5 +39,4 @@ object InventoryApiImplSpec: Spek({
             }
         }
     }
-
 })

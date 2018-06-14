@@ -27,11 +27,13 @@ class StockRetrievalIntegrationSpec {
 
     @BeforeEach
     fun setup() {
-        stockEntityRepository.saveAll(listOf(
+        stockEntityRepository.saveAll(
+            listOf(
                 StockEntity(null, 1L, 100L, 5L, 100L),
                 StockEntity(null, 2L, 0L, 5L, 100L),
                 StockEntity(null, 3L, 15L, 10L, null)
-        ))
+            )
+        )
     }
 
     @AfterEach

@@ -12,8 +12,8 @@ class InventoryApiImpl @Inject constructor(val inventoryService: InventoryServic
     override fun retrieveStock(productIds: List<String>): List<StockDto> {
         val stocks: List<Stock> = inventoryService.retrieveStock(productIds)
         return stocks.asSequence()
-                .map { stock -> stock.convertToStockDto() }
-                .toList()
+            .map { stock -> stock.convertToStockDto() }
+            .toList()
     }
 }
 
