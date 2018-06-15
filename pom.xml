@@ -171,12 +171,12 @@
 
     <profiles>
         <profile>
-            <id>dev</id>
+            <id>prod</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <build.profile.id>dev</build.profile.id>
+                <build.profile.id>prod</build.profile.id>
                 <skip.integration.tests>true</skip.integration.tests>
                 <skip.functional.tests>true</skip.functional.tests>
                 <skip.unit.tests>false</skip.unit.tests>

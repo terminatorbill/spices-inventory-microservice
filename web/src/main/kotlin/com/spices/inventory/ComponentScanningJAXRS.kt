@@ -15,16 +15,19 @@ internal class ComponentScanningJAXRS @Inject constructor(val applicationContext
 
     @PostConstruct
     fun setup() {
-        registerEnpoints()
+        registerEndpoints()
     }
 
-    private fun registerEnpoints() {
+    private fun registerEndpoints() {
         /*
             jersey package scanning doesn't work with spring boot nested jars.
             Look for beans in the spring context and register them instead.
         */
         applicationContext.getBeansWithAnnotation(Provider::class.java).values.forEach(Consumer<Any> { this.register(it) })
-        applicationContext.getBeansWithAnnotation(Path::class.java).values.forEach(Consumer<Any> { this.register(it) })
+        applicationContext.getBeansWithAnnotation(Path::class.java).values.forEach(Consumer<Any> {
+            LOG.info("Registering JAX-RS resource : {}", it)
+            this.register(it)
+        })
     }
 
     companion object {
