@@ -2,12 +2,14 @@ package com.spices.inventory.service
 
 import com.spices.inventory.domain.Stock
 import com.spices.inventory.persistence.repository.InventoryRepositoryFacade
+import com.spices.inventory.service.exception.InventoryServiceException
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
+import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 
 object InventoryServiceImplSpec : Spek({
@@ -20,9 +22,9 @@ object InventoryServiceImplSpec : Spek({
 
         on("Retrieving the stock for each passed productId") {
             val expectedStock = listOf(
-                    Stock(1L, 100L),
-                    Stock(2L, 0L),
-                    Stock(3L, 30L)
+                Stock(1L, 100L),
+                Stock(2L, 0L),
+                Stock(3L, 30L)
             )
 
             Mockito.`when`(inventoryDaoFacade.retrieveStock(productIds)).thenReturn(expectedStock)
@@ -36,6 +38,22 @@ object InventoryServiceImplSpec : Spek({
                 assertThat(actualStock[1].currentStock, `is`(expectedStock[1].currentStock))
                 assertThat(actualStock[2].productId, `is`(expectedStock[2].productId))
                 assertThat(actualStock[2].currentStock, `is`(expectedStock[2].currentStock))
+            }
+        }
+
+        on("Retrieving stock for less products than expected due to some products that do not exist") {
+            val lessStock = listOf(
+                Stock(1L, 100L),
+                Stock(2L, 0L)
+            )
+
+            Mockito.`when`(inventoryDaoFacade.retrieveStock(productIds)).thenReturn(lessStock)
+
+            it("Should throw InventoryServiceException with code LESS_PRODUCTS_RETRIEVED_THAN_EXPECTED") {
+                val ex: InventoryServiceException =
+                    assertThrows { inventoryService.retrieveStock(productIds.map { it.toString() }) }
+
+                assertThat(ex.type, `is`(InventoryServiceException.Type.LESS_PRODUCTS_RETRIEVED_THAN_EXPECTED))
             }
         }
     }

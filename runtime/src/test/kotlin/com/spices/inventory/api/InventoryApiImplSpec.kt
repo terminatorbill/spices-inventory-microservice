@@ -2,13 +2,16 @@ package com.spices.inventory.api
 
 import com.spices.inventory.domain.Stock
 import com.spices.inventory.dto.StockDto
+import com.spices.inventory.exception.LessProductsRetrievedException
 import com.spices.inventory.service.InventoryService
+import com.spices.inventory.service.exception.InventoryServiceException
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
+import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 
 object InventoryApiImplSpec : Spek({
@@ -36,6 +39,14 @@ object InventoryApiImplSpec : Spek({
                 assertThat(actualStockForEachProduct[1].currentStock, `is`(expectedStockForEachProduct[1].currentStock))
                 assertThat(actualStockForEachProduct[2].productId, `is`(expectedStockForEachProduct[2].productId))
                 assertThat(actualStockForEachProduct[2].currentStock, `is`(expectedStockForEachProduct[2].currentStock))
+            }
+        }
+
+        on("throwing InventoryServiceException with code LESS_PRODUCTS_RETRIEVED_THAN_EXPECTED") {
+            Mockito.`when`(inventoryService.retrieveStock(expectedProductsIds)).thenThrow(InventoryServiceException("foo", InventoryServiceException.Type.LESS_PRODUCTS_RETRIEVED_THAN_EXPECTED))
+
+            it ("should throw LessProductedRetrievedException") {
+                assertThrows<LessProductsRetrievedException> { inventoryApi.retrieveStock(expectedProductsIds) }
             }
         }
     }
