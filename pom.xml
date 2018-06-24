@@ -19,6 +19,7 @@
         <postgres.version>42.2.2</postgres.version>
         <junit.version>5.1.0</junit.version>
         <junit.platform.version>1.1.0</junit.platform.version>
+        <javalite.version>2.0</javalite.version>
     </properties>
 
 
@@ -166,6 +167,12 @@
                 <version>${spring.boot.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.javalite</groupId>
+                <artifactId>javalite-common</artifactId>
+                <version>${javalite.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -202,7 +209,7 @@
                 <module>database-integration-tests</module>
             </modules>
         </profile>
-        <!--<profile>
+        <profile>
             <id>functional-test</id>
             <properties>
                 <build.profile.id>functional-test</build.profile.id>
@@ -216,7 +223,7 @@
                 <module>web</module>
                 <module>functional-tests</module>
             </modules>
-        </profile>-->
+        </profile>
     </profiles>
 
     <build>
@@ -289,8 +296,8 @@
                     <configuration>
                         <skipTests>${skip.unit.tests}</skipTests>
                         <excludes>
-                            <exclude>**/*IntegrationSpec.*</exclude>
-                            <exclude>**/functional/**</exclude>
+                            <exclude>**/*IntegrationSpec*</exclude>
+                            <exclude>**/*FunctionalSpec*</exclude>
                         </excludes>
                         <includes>
                             <include>**/*Spec.*</include>
