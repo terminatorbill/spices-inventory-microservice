@@ -16,7 +16,7 @@ class LessProductsRetrievedExceptionMapper : ExceptionMapper<LessProductsRetriev
         val uuid = UUID.randomUUID()
         LOG.error("Less stock retrieved. Exception {} with UUID {}", e.message, uuid)
         return Response
-            .status(Response.Status.INTERNAL_SERVER_ERROR)
+            .status(Response.Status.CONFLICT)
             .entity(ErrorDto(ErrorCodeDto.LESS_STOCK_RETRIEVED, "Less stocked retrieved than expected", uuid))
             .build()
     }

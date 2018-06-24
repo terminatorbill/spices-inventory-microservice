@@ -20,10 +20,10 @@ class LessProductsRetrievedExceptionMapperSpec : Spek({
         on("Mapping this error") {
             val mapper = LessProductsRetrievedExceptionMapper()
 
-            it("Should return 500 with code LESS_STOCK_RETRIEVED") {
+            it("Should return 409 with code LESS_STOCK_RETRIEVED") {
                 val response = mapper.toResponse(ex)
 
-                assertThat(response.status, `is`(Response.Status.INTERNAL_SERVER_ERROR.statusCode))
+                assertThat(response.status, `is`(Response.Status.CONFLICT.statusCode))
                 val errorDto = response.entity as ErrorDto
 
                 assertThat(errorDto.code, `is`(ErrorCodeDto.LESS_STOCK_RETRIEVED))

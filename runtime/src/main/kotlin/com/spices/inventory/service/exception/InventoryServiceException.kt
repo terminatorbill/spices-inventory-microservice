@@ -14,6 +14,4 @@ class InventoryServiceException : RuntimeException {
     constructor(message: String, type: Type, cause: Throwable) : super(message, cause) {
         this.type = type
     }
-
-
 }
