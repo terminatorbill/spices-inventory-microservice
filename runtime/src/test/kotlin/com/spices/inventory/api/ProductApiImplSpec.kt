@@ -22,6 +22,5 @@ object ProductApiImplSpec : Spek({
                 verify(inventoryService, times(1)).createProducts(productsToCreate)
             }
         }
-
     }
 })

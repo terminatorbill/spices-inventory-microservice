@@ -6,7 +6,6 @@ import javax.inject.Inject
 
 @Component
 class ProductApiImpl @Inject constructor(val inventoryService: InventoryService) : ProductApi {
-
     override fun createProducts(productIds: List<String>) {
         inventoryService.createProducts(productIds)
     }
