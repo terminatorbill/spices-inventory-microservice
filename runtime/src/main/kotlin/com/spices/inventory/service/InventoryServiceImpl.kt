@@ -17,6 +17,10 @@ class InventoryServiceImpl @Inject constructor(val inventoryRepositoryFacade: In
         return stock
     }
 
+    override fun createProducts(productIds: List<String>) {
+        inventoryRepositoryFacade.createProducts(productIds)
+    }
+
     private fun verifyThatAllProductsExist(expectedProducts: List<String>, actualProducts: List<String>) {
         if (expectedProducts.size != actualProducts.size) {
             throw InventoryServiceException("Less products retrieved that expected", InventoryServiceException.Type.LESS_PRODUCTS_RETRIEVED_THAN_EXPECTED)
