@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  inventory:
+    image: inventory
+    depends_on:
+      - postgres
+    links:
+      - postgres:postgres
+    ports:
+      - "9090:9090"
+      - "9091:9091"
+      - "5005:5005"
+    environment:
+      JDBC_URL: "jdbc:postgresql://postgres/inventory-db"
+      JDBC_USER: "spices"
+      JDBC_PASSWORD: "spices"
+      HBM_AUTO: "create-drop"
+      SHOW_SQL: "true"
+      SHOW_SQL_COMMENTS: "true"
+      FORMAT_SQL: "true"
+
+  postgres:
+    image: postgres:10.3-alpine
+    command: "postgres"
+    healthcheck:
+      test: "pg_isready -h localhost -p 5432 -q -U postgres"
+      interval: 3s
+      timeout: 5s
+      retries: 5
+    environment:
+      POSTGRES_USER: "spices"
+      POSTGRES_PASSWORD: "spices"
+      POSTGRES_DB: "inventory-db"
+    ports:
+      - "5432:5432"

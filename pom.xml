@@ -12,9 +12,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <kotlin.version>1.2.41</kotlin.version>
+        <kotlin.version>1.2.50</kotlin.version>
         <spek.version>1.1.5</spek.version>
-        <spring.boot.version>2.0.2.RELEASE</spring.boot.version>
+        <spring.boot.version>2.0.1.RELEASE</spring.boot.version>
+        <h2.version>1.4.197</h2.version>
+        <postgres.version>42.2.2</postgres.version>
+        <junit.version>5.1.0</junit.version>
+        <junit.platform.version>1.1.0</junit.platform.version>
+        <javalite.version>2.0</javalite.version>
     </properties>
 
 
@@ -26,14 +31,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <!--<dependency>
-                &lt;!&ndash; Import dependency management from Spring Boot &ndash;&gt;
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring.boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>-->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter</artifactId>
@@ -43,6 +40,17 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-actuator</artifactId>
                 <version>${spring.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-jersey</artifactId>
+                <version>${spring.boot.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-aop</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -65,15 +73,52 @@
                 <version>1.2.41</version>
             </dependency>
             <dependency>
-                <groupId>org.jooq</groupId>
-                <artifactId>jooq</artifactId>
-                <version>3.10.7</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-jpa</artifactId>
+                <version>2.0.1.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgres.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>2.3.0</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>2.0.1.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jetbrains.spek</groupId>
                 <artifactId>spek-api</artifactId>
                 <version>${spek.version}</version>
                 <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.spek</groupId>
+                <artifactId>spek-junit-platform-engine</artifactId>
+                <version>${spek.version}</version>
+                <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.junit.platform</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
@@ -86,8 +131,100 @@
                 <version>${kotlin.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>5.2.0</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-launcher</artifactId>
+                <version>${junit.platform.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-runner</artifactId>
+                <version>${junit.platform.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>2.18.3</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-all</artifactId>
+                <version>1.3</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-test</artifactId>
+                <version>${spring.boot.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.javalite</groupId>
+                <artifactId>javalite-common</artifactId>
+                <version>${javalite.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <profiles>
+        <profile>
+            <id>prod</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <build.profile.id>prod</build.profile.id>
+                <skip.integration.tests>true</skip.integration.tests>
+                <skip.functional.tests>true</skip.functional.tests>
+                <skip.unit.tests>false</skip.unit.tests>
+            </properties>
+            <modules>
+                <module>api</module>
+                <module>runtime</module>
+                <module>web</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>integration-test</id>
+            <properties>
+                <build.profile.id>integration-test</build.profile.id>
+                <skip.integration.tests>false</skip.integration.tests>
+                <skip.unit.tests>true</skip.unit.tests>
+                <skip.functional.tests>true</skip.functional.tests>
+            </properties>
+            <modules>
+                <module>api</module>
+                <module>runtime</module>
+                <module>web</module>
+                <module>database-integration-tests</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>functional-test</id>
+            <properties>
+                <build.profile.id>functional-test</build.profile.id>
+                <skip.integration.tests>true</skip.integration.tests>
+                <skip.unit.tests>true</skip.unit.tests>
+                <skip.functional.tests>false</skip.functional.tests>
+            </properties>
+            <modules>
+                <module>api</module>
+                <module>runtime</module>
+                <module>web</module>
+                <module>functional-tests</module>
+            </modules>
+        </profile>
+    </profiles>
 
     <build>
         <finalName>inventory-${project.version}</finalName>
@@ -97,6 +234,10 @@
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>${spring.boot.version}</version>
+                    <configuration>
+                        <skip>true</skip>
+                        <mainClass>none</mainClass>
+                    </configuration>
                     <executions>
                         <execution>
                             <goals>
@@ -108,6 +249,7 @@
                 <plugin>
                     <artifactId>kotlin-maven-plugin</artifactId>
                     <groupId>org.jetbrains.kotlin</groupId>
+                    <version>${kotlin.version}</version>
                     <executions>
                         <execution>
                             <id>compile</id>
@@ -131,6 +273,7 @@
                         </args>
                         <compilerPlugins>
                             <plugin>spring</plugin>
+                            <plugin>jpa</plugin>
                         </compilerPlugins>
                     </configuration>
                     <dependencies>
@@ -139,6 +282,114 @@
                             <artifactId>kotlin-maven-allopen</artifactId>
                             <version>${kotlin.version}</version>
                         </dependency>
+                        <dependency>
+                            <groupId>org.jetbrains.kotlin</groupId>
+                            <artifactId>kotlin-maven-noarg</artifactId>
+                            <version>${kotlin.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.19.1</version>
+                    <configuration>
+                        <skipTests>${skip.unit.tests}</skipTests>
+                        <excludes>
+                            <exclude>**/*IntegrationSpec*</exclude>
+                            <exclude>**/*FunctionalSpec*</exclude>
+                        </excludes>
+                        <includes>
+                            <include>**/*Spec.*</include>
+                        </includes>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.junit.jupiter</groupId>
+                            <artifactId>junit-jupiter-engine</artifactId>
+                            <version>${junit.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.junit.platform</groupId>
+                            <artifactId>junit-platform-surefire-provider</artifactId>
+                            <version>${junit.platform.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.19.1</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.junit.jupiter</groupId>
+                            <artifactId>junit-jupiter-engine</artifactId>
+                            <version>${junit.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.junit.platform</groupId>
+                            <artifactId>junit-platform-surefire-provider</artifactId>
+                            <version>${junit.platform.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>0.26.0</version>
+                    <executions>
+                        <execution>
+                            <configuration>
+                                <skip>true</skip>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.8</version>
+                    <executions>
+                        <execution>
+                            <id>ktlint</id>
+                            <phase>verify</phase>
+                            <configuration>
+                                <target name="ktlint">
+                                    <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
+                                          classname="com.github.shyiko.ktlint.Main" classpathref="maven.plugin.classpath">
+                                        <arg value="src/**/*.kt"/>
+                                        <arg value="--reporter=plain"/>
+                                        <arg value="--reporter=checkstyle,output=${project.build.directory}/ktlint.xml"/>
+                                    </java>
+                                </target>
+                            </configuration>
+                            <goals><goal>run</goal></goals>
+                        </execution>
+                        <execution>
+                            <id>ktlint-format</id>
+                            <configuration>
+                                <target name="ktlint">
+                                    <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
+                                          classname="com.github.shyiko.ktlint.Main" classpathref="maven.plugin.classpath">
+                                        <arg value="-F"/>
+                                        <arg value="src/**/*.kt"/>
+                                    </java>
+                                </target>
+                            </configuration>
+                            <goals><goal>run</goal></goals>
+                        </execution>
+                    </executions>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.github.shyiko</groupId>
+                            <artifactId>ktlint</artifactId>
+                            <version>0.23.1</version>
+                        </dependency>
+                        <!-- additional 3rd party ruleset(s) can be specified here -->
                     </dependencies>
                 </plugin>
             </plugins>
