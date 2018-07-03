@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  catalogue:
+  inventory:
     image: inventory
     depends_on:
       - postgres
@@ -10,6 +10,7 @@ services:
     ports:
       - "9090:9090"
       - "9091:9091"
+      - "5005:5005"
     environment:
       JDBC_URL: "jdbc:postgresql://postgres/inventory-db"
       JDBC_USER: "spices"
