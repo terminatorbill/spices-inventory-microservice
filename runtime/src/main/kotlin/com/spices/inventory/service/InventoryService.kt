@@ -6,4 +6,5 @@ interface InventoryService {
     fun retrieveStock(productIds: List<String>): List<Stock>
 
     fun createProducts(productIds: List<String>)
+    fun modifyStock(modificationStockList: List<Stock>)
 }

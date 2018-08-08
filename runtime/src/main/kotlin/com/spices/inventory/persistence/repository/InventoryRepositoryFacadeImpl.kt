@@ -9,7 +9,6 @@ import javax.inject.Inject
 
 @Repository
 class InventoryRepositoryFacadeImpl @Inject constructor(val stockEntityRepository: StockEntityRepository) : InventoryRepositoryFacade {
-
     @Transactional
     override fun retrieveStock(productIds: List<Long>): List<Stock> {
         val stock: List<StockProjection> = stockEntityRepository.retrieveStockForProducts(productIds)
@@ -25,5 +24,10 @@ class InventoryRepositoryFacadeImpl @Inject constructor(val stockEntityRepositor
             .map { StockEntity(null, it.toLong(), 0L, 0L, null) }
             .toList()
         )
+    }
+
+    @Transactional
+    override fun modifyStock(modifiedStockList: List<Stock>) {
+        modifiedStockList.map { it -> stockEntityRepository.updateStock(it.currentStock, it.productId) }
     }
 }

@@ -1,5 +1,6 @@
 package com.spices.inventory.dto
 
 enum class ErrorCodeDto {
-    LESS_STOCK_RETRIEVED
+    LESS_STOCK_RETRIEVED,
+    GENERIC
 }

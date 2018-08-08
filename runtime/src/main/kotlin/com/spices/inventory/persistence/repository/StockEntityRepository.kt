@@ -3,6 +3,7 @@ package com.spices.inventory.persistence.repository
 import com.spices.inventory.persistence.model.StockEntity
 import com.spices.inventory.persistence.projection.StockProjection
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
@@ -13,4 +14,8 @@ interface StockEntityRepository : JpaRepository<StockEntity, Long> {
             "FROM StockEntity s WHERE s.productId IN :productIds"
     )
     fun retrieveStockForProducts(@Param("productIds") productIds: List<Long>): List<StockProjection>
+
+    @Modifying
+    @Query("UPDATE StockEntity s SET s.currentStock = :currentStock WHERE s.productId = :productId")
+    fun updateStock(@Param("currentStock") currentStock: Long, @Param("productId") productId: Long)
 }

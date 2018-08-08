@@ -1,5 +1,8 @@
 package com.spices.inventory.service
 
+import com.nhaarman.mockito_kotlin.argumentCaptor
+import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.whenever
 import com.spices.inventory.domain.Stock
 import com.spices.inventory.persistence.repository.InventoryRepositoryFacade
 import com.spices.inventory.service.exception.InventoryServiceException
@@ -10,14 +13,13 @@ import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.junit.jupiter.api.assertThrows
-import org.mockito.Mockito
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 
 object InventoryServiceImplSpec : Spek({
 
-    val inventoryDaoFacade = Mockito.mock(InventoryRepositoryFacade::class.java)
-    val inventoryService = InventoryServiceImpl(inventoryDaoFacade)
+    val inventoryRepositoryFacade: InventoryRepositoryFacade = mock()
+    val inventoryService = InventoryServiceImpl(inventoryRepositoryFacade)
 
     given("We want to retrieve the stock for each passed productId") {
         val productIds = listOf(1L, 2L, 3L)
@@ -29,7 +31,7 @@ object InventoryServiceImplSpec : Spek({
                 Stock(3L, 30L)
             )
 
-            Mockito.`when`(inventoryDaoFacade.retrieveStock(productIds)).thenReturn(expectedStock)
+            whenever(inventoryRepositoryFacade.retrieveStock(productIds)).thenReturn(expectedStock)
 
             val actualStock = inventoryService.retrieveStock(productIds.map { it.toString() })
             it("Should return the expected stock") {
@@ -49,7 +51,7 @@ object InventoryServiceImplSpec : Spek({
                 Stock(2L, 0L)
             )
 
-            Mockito.`when`(inventoryDaoFacade.retrieveStock(productIds)).thenReturn(lessStock)
+            whenever(inventoryRepositoryFacade.retrieveStock(productIds)).thenReturn(lessStock)
 
             it("Should throw InventoryServiceException with code LESS_PRODUCTS_RETRIEVED_THAN_EXPECTED") {
                 val ex: InventoryServiceException =
@@ -67,7 +69,31 @@ object InventoryServiceImplSpec : Spek({
             inventoryService.createProducts(productsToCreate)
 
             it("Should create the products") {
-                verify(inventoryDaoFacade, times(1)).createProducts(productsToCreate)
+                verify(inventoryRepositoryFacade, times(1)).createProducts(productsToCreate)
+            }
+        }
+    }
+
+    given("We want to update the stock for some products in the inventory") {
+        val productsToModifyTheStock = listOf(Stock(1L, 10L), Stock(2L, -50L))
+        val currentStock = listOf(Stock(1L, 100L), Stock(2L, 100L))
+
+        whenever(inventoryRepositoryFacade.retrieveStock(listOf(1L, 2L))).thenReturn(currentStock)
+
+        val argumentCaptor = argumentCaptor<List<Stock>>()
+
+        on("Updating the stock") {
+            inventoryService.modifyStock(productsToModifyTheStock)
+
+            it("Should modify the current stock with the new values") {
+                verify(inventoryRepositoryFacade, times(1)).modifyStock(argumentCaptor.capture())
+
+                val modifiedStock = argumentCaptor.firstValue
+                assertThat(modifiedStock.size, `is`(productsToModifyTheStock.size))
+                assertThat(modifiedStock[0].productId, `is`(productsToModifyTheStock[0].productId))
+                assertThat(modifiedStock[0].currentStock, `is`(productsToModifyTheStock[0].currentStock + currentStock[0].currentStock))
+                assertThat(modifiedStock[1].productId, `is`(productsToModifyTheStock[1].productId))
+                assertThat(modifiedStock[1].currentStock, `is`(productsToModifyTheStock[1].currentStock + currentStock[1].currentStock))
             }
         }
     }
